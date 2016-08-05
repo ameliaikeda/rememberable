@@ -1,7 +1,7 @@
 Rememberable, Laravel 5 query cache
 ===================================
 
-Rememberable is an Eloquent trait for Laravel 5.0+ that brings back the `remember()` query functions from Laravel 4.2. This makes it super easy to cache your query results for an adjustable amount of time.
+Rememberable is an Eloquent trait for Laravel 5.2+ that brings back the `remember()` query functions from Laravel 4.2. This makes it super easy to cache your query results for an adjustable amount of time.
 
     // Get a the first user's posts and remember them for a day.
     User::first()->remember(1440)->posts()->get();
@@ -12,14 +12,14 @@ It works by simply remembering the SQL query that was used and storing the resul
 
 Install using Composer, just as you would anything else.
 
-    composer require watson/rememberable
+    composer require amelia/rememberable
 
 The easiest way to get started with Eloquent is to create an abstract `App\Model` which you can extend your application models from. In this base model you can import the rememberable trait which will extend the same caching functionality to any queries you build off your model.
 
     <?php
     namespace App;
 
-    use Watson\Rememberable\Rememberable;
+    use Amelia\Rememberable\Rememberable;
     use Illuminate\Database\Eloquent\Model as Eloquent;
 
     abstract class Model extends Eloquent
