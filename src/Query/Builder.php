@@ -43,12 +43,12 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Execute the query as a "select" statement.
      *
-     * @param  array  $columns
+     * @param  array $columns
      * @return array|static[]
      */
     public function get($columns = ['*'])
     {
-        if ( ! is_null($this->cacheMinutes)) {
+        if (! is_null($this->cacheMinutes)) {
             return $this->getCached($columns);
         }
 
@@ -58,7 +58,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Execute the query as a cached "select" statement.
      *
-     * @param  array  $columns
+     * @param  array $columns
      * @return array
      */
     public function getCached($columns = ['*'])
@@ -89,8 +89,8 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Indicate that the query results should be cached.
      *
-     * @param  \DateTime|int  $minutes
-     * @param  string  $key
+     * @param  \DateTime|int $minutes
+     * @param  string $key
      * @return $this
      */
     public function remember($minutes, $key = null)
@@ -103,7 +103,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Indicate that the query results should be cached forever.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return \Illuminate\Database\Query\Builder|static
      */
     public function rememberForever($key = null)
@@ -114,7 +114,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Indicate that the results, if cached, should use the given cache tags.
      *
-     * @param  array|mixed  $cacheTags
+     * @param  array|mixed $cacheTags
      * @return $this
      */
     public function cacheTags($cacheTags)
@@ -127,7 +127,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Indicate that the results, if cached, should use the given cache driver.
      *
-     * @param  string  $cacheDriver
+     * @param  string $cacheDriver
      * @return $this
      */
     public function cacheDriver($cacheDriver)
@@ -166,7 +166,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      */
     public function getCacheKey()
     {
-        return $this->cachePrefix.':'.($this->cacheKey ?: $this->generateCacheKey());
+        return $this->cachePrefix . ':' . ($this->cacheKey ?: $this->generateCacheKey());
     }
 
     /**
@@ -178,18 +178,18 @@ class Builder extends \Illuminate\Database\Query\Builder
     {
         $name = $this->connection->getName();
 
-        return hash('sha256', $name.$this->toSql().serialize($this->getBindings()));
+        return hash('sha256', $name . $this->toSql() . serialize($this->getBindings()));
     }
 
     /**
      * Flush the cache for the current model or a given tag name
      *
-     * @param  mixed  $cacheTags
+     * @param  mixed $cacheTags
      * @return boolean
      */
     public function flushCache($cacheTags = null)
     {
-        if ( ! method_exists(Cache::getStore(), 'tags')) {
+        if (! method_exists(Cache::getStore(), 'tags')) {
             return false;
         }
 
@@ -203,12 +203,12 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Get the Closure callback used when caching queries.
      *
-     * @param  array  $columns
+     * @param  array $columns
      * @return \Closure
      */
     protected function getCacheCallback($columns)
     {
-        return function() use ($columns) {
+        return function () use ($columns) {
             $this->cacheMinutes = null;
 
             return $this->get($columns);
