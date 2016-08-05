@@ -103,6 +103,25 @@ class Builder extends \Illuminate\Database\Query\Builder
     }
 
     /**
+     * Forget the executed query.
+     *
+     * @param array $columns
+     * @return bool
+     */
+    public function forget($columns = ['*'])
+    {
+        if (is_null($this->columns)) {
+            $this->columns = $columns;
+        }
+
+        $key = $this->getCacheKey();
+
+        $cache = $this->getCache();
+
+        return $cache->forget($key);
+    }
+
+    /**
      * Indicate that the query results should be cached forever.
      *
      * @param  string $key
@@ -142,7 +161,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Get the cache object with tags assigned, if applicable.
      *
-     * @return \Illuminate\Cache\CacheManager
+     * @return \Illuminate\Cache\CacheManager|\Illuminate\Contracts\Cache\Store
      */
     protected function getCache()
     {
