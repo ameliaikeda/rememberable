@@ -1,5 +1,5 @@
 <?php
-namespace Watson\Rememberable\Query;
+namespace Amelia\Rememberable\Query;
 
 use Illuminate\Support\Facades\Cache;
 

@@ -1,7 +1,8 @@
 <?php
-namespace Watson\Rememberable;
 
-use Watson\Rememberable\Query\Builder;
+namespace Amelia\Rememberable;
+
+use Amelia\Rememberable\Query\Builder;
 
 trait Rememberable
 {
