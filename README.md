@@ -46,6 +46,13 @@ Using the remember method is super simple. Just pass the number of minutes you w
     // Remember the number of users for an hour.
     $users = User::remember(60)->count();
 
+### Forgetting a query
+
+You just need to call `forget()` instead of `get()`.
+
+    // Forget the query "select * from users where id = 1"
+    User::where('id', 1)->forget();
+
 ### Cache tags
 
 If you want to tag certain queries you can add `cacheTags('tag_name')` to your query. Please notice that cache tags are not supported by all cache drivers.
