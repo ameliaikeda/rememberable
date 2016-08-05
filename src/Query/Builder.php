@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Cache;
 
 class Builder extends \Illuminate\Database\Query\Builder
 {
+    const HASH_ALGO = 'sha512';
+
     /**
      * The key that should be used when caching the query.
      *
@@ -178,7 +180,13 @@ class Builder extends \Illuminate\Database\Query\Builder
     {
         $name = $this->connection->getName();
 
-        return hash('sha256', $name . $this->toSql() . serialize($this->getBindings()));
+        $data = $name . $this->toSql() . serialize($this->getBindings());
+
+        if (! $key = config('rememberable.key')) {
+            return hash(static::HASH_ALGO, $data);
+        }
+
+        return hash_hmac(static::HASH_ALGO, $key, $data);
     }
 
     /**
