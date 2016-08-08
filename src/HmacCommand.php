@@ -50,14 +50,14 @@ class HmacCommand extends Command
 
         // we want to insert it, if we haven't already.
         if (! str_contains($file, $name)) {
-            file_put_contents($filename, $file . "\n{$name}={$key}");
+            file_put_contents($filename, $file."\n{$name}={$key}");
 
             return;
         }
 
         file_put_contents($filename, str_replace(
-            $name . '=' . $this->laravel['config']['rememberable.key'],
-            $name . '=' . $key,
+            $name.'='.$this->laravel['config']['rememberable.key'],
+            $name.'='.$key,
             $file
         ));
     }

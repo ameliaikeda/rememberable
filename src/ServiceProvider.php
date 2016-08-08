@@ -13,7 +13,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        $this->mergeConfigFrom($config = __DIR__ . '/config.php', 'rememberable');
+        $this->mergeConfigFrom($config = __DIR__.'/config.php', 'rememberable');
         $this->publishes([$config => config_path('rememberable.php')], 'config');
         $this->commands(HmacCommand::class);
     }
