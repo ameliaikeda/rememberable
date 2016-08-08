@@ -1,4 +1,5 @@
 <?php
+
 namespace Amelia\Rememberable\Query;
 
 use Illuminate\Support\Facades\Cache;
@@ -187,7 +188,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      */
     public function getCacheKey()
     {
-        return $this->cachePrefix . ':' . ($this->cacheKey ?: $this->generateCacheKey());
+        return $this->cachePrefix.':'.($this->cacheKey ?: $this->generateCacheKey());
     }
 
     /**
@@ -199,7 +200,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     {
         $name = $this->connection->getName();
 
-        $data = $name . $this->toSql() . serialize($this->getBindings());
+        $data = $name.$this->toSql().serialize($this->getBindings());
 
         if (! $key = config('rememberable.key')) {
             return hash(static::HASH_ALGO, $data);
@@ -209,10 +210,10 @@ class Builder extends \Illuminate\Database\Query\Builder
     }
 
     /**
-     * Flush the cache for the current model or a given tag name
+     * Flush the cache for the current model or a given tag name.
      *
      * @param  mixed $cacheTags
-     * @return boolean
+     * @return bool
      */
     public function flushCache($cacheTags = null)
     {
