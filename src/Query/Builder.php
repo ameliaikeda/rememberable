@@ -106,16 +106,14 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Forget the executed query.
      *
-     * @param array $columns
+     * Allows a key to be passed in, for `User::forget('my-key')`.
+     *
+     * @param string $key
      * @return bool
      */
-    public function forget($columns = ['*'])
+    public function forget($key = null)
     {
-        if (is_null($this->columns)) {
-            $this->columns = $columns;
-        }
-
-        $key = $this->getCacheKey();
+        $key = $key ?: $this->getCacheKey();
 
         $cache = $this->getCache();
 
