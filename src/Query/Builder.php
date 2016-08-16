@@ -160,7 +160,7 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Get the cache object with tags assigned, if applicable.
      *
-     * @return \Illuminate\Cache\CacheManager|\Illuminate\Contracts\Cache\Store
+     * @return \Illuminate\Contracts\Cache\Repository
      */
     protected function getCache()
     {
