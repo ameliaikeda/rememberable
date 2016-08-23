@@ -17,18 +17,14 @@ trait Rememberable
 
         $grammar = $conn->getQueryGrammar();
 
-        $builder = new Builder($conn, $grammar, $conn->getPostProcessor());
+        $builder = new Builder($conn, $grammar, $conn->getPostProcessor(), $this);
 
-        if (isset($this->rememberFor)) {
-            $builder->remember($this->rememberFor);
+        if (isset($this->tags)) {
+            $builder->tags($this->tags);
         }
 
-        if (isset($this->rememberCacheTag)) {
-            $builder->cacheTags($this->rememberCacheTag);
-        }
-
-        if (isset($this->rememberCachePrefix)) {
-            $builder->prefix($this->rememberCachePrefix);
+        if (isset($this->prefix)) {
+            $builder->prefix($this->prefix);
         }
 
         return $builder;
