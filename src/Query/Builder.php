@@ -149,11 +149,11 @@ class Builder extends \Illuminate\Database\Query\Builder
      * Can be called using Model::flush()
      *
      * @param  array|string $tags
-     * @return boolean
+     * @return bool
      */
     public function flush($tags = null)
     {
-        $cache = Cache::driver($this->driver);;
+        $cache = Cache::driver($this->driver);
 
         if (! method_exists($cache, 'tags')) {
             return false;
@@ -179,7 +179,6 @@ class Builder extends \Illuminate\Database\Query\Builder
 
         return $this;
     }
-
 
     /**
      * Get the Closure callback used when caching queries.
@@ -227,7 +226,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      */
     protected function getKey()
     {
-        return $this->prefix . ':' . ($this->key ?: $this->generateCacheKey());
+        return $this->prefix.':'.($this->key ?: $this->generateCacheKey());
     }
 
     /**
@@ -265,7 +264,6 @@ class Builder extends \Illuminate\Database\Query\Builder
         }
 
         return $cache->tags($this->getCacheTags());
-
     }
 
     /**
