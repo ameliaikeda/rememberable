@@ -30,10 +30,6 @@ trait Rememberable
 
         $builder = new QueryBuilder($conn, $grammar, $conn->getPostProcessor(), $this);
 
-        if (isset($this->rememberPrefix)) {
-            $builder->cachePrefix($this->rememberPrefix);
-        }
-
         if (static::rememberable()) {
             $builder->remember(-1);
         }

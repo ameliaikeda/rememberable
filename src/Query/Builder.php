@@ -121,32 +121,6 @@ class Builder extends \Illuminate\Database\Query\Builder
     }
 
     /**
-     * Indicate that the results, if cached, should use the given cache tags.
-     *
-     * @param  array|mixed $tags
-     * @return $this
-     */
-    public function cacheTags($tags)
-    {
-        $this->tags = $tags;
-
-        return $this;
-    }
-
-    /**
-     * Indicate that the results, if cached, should use the given cache driver.
-     *
-     * @param  string $driver
-     * @return $this
-     */
-    public function cacheDriver($driver)
-    {
-        $this->driver = $driver;
-
-        return $this;
-    }
-
-    /**
      * Flush the cache for the current model or a given tag name.
      *
      * Can be called using Model::flush()
@@ -159,20 +133,6 @@ class Builder extends \Illuminate\Database\Query\Builder
         $tags = $this->getCacheTags($tags);
 
         $this->flushKeysForTags($tags);
-    }
-
-    /**
-     * Set the cache prefix.
-     *
-     * @param string $prefix
-     *
-     * @return $this
-     */
-    public function cachePrefix($prefix)
-    {
-        $this->prefix = $prefix;
-
-        return $this;
     }
 
     /**
