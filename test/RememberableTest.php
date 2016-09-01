@@ -4,7 +4,6 @@ use Amelia\Rememberable\Rememberable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
 
 class RememberableTest extends PHPUnit_Framework_TestCase
 {
@@ -115,4 +114,6 @@ class Group extends RememberableStub
     }
 }
 
-class SqlIssuedException extends Exception {}
+class SqlIssuedException extends Exception
+{
+}
