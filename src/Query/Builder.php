@@ -2,11 +2,14 @@
 
 namespace Amelia\Rememberable\Query;
 
+use Illuminate\Cache\RedisStore;
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
 use Illuminate\Support\Facades\Cache;
+use Predis\ClientInterface as RedisClient;
 
 class Builder extends \Illuminate\Database\Query\Builder
 {
@@ -99,7 +102,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      */
     public function forget($key = null)
     {
-        $key = $key ?: $this->getKey();
+        $key = $key ?: $this->getCacheKey();
 
         $cache = $this->getCache();
 
@@ -123,7 +126,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      * @param  array|mixed $tags
      * @return $this
      */
-    public function tags($tags)
+    public function cacheTags($tags)
     {
         $this->tags = $tags;
 
@@ -136,7 +139,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      * @param  string $driver
      * @return $this
      */
-    public function driver($driver)
+    public function cacheDriver($driver)
     {
         $this->driver = $driver;
 
@@ -153,17 +156,9 @@ class Builder extends \Illuminate\Database\Query\Builder
      */
     public function flush($tags = null)
     {
-        $cache = Cache::driver($this->driver);
-
-        if (! method_exists($cache, 'tags')) {
-            return false;
-        }
-
         $tags = $this->getCacheTags($tags);
 
-        $cache->tags($tags)->flush();
-
-        return true;
+        $this->flushKeysForTags($tags);
     }
 
     /**
@@ -173,7 +168,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      *
      * @return $this
      */
-    public function prefix($prefix)
+    public function cachePrefix($prefix)
     {
         $this->prefix = $prefix;
 
@@ -216,16 +211,21 @@ class Builder extends \Illuminate\Database\Query\Builder
      */
     protected function getCacheInfo()
     {
-        return [$this->getKey(), $this->minutes];
+        return [$this->getCacheKey(), $this->minutes];
     }
 
     /**
      * Get a unique cache key for the complete query.
      *
+     * @param array|null $columns
      * @return string
      */
-    protected function getKey()
+    public function getCacheKey($columns = null)
     {
+        if ($columns !== null) {
+            $this->columns = $columns;
+        }
+
         return $this->prefix.':'.($this->key ?: $this->generateCacheKey());
     }
 
@@ -235,7 +235,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      * @param string|array|null $tags
      * @return array
      */
-    protected function getCacheTags($tags = null)
+    public function getCacheTags($tags = null)
     {
         if ($tags !== null) {
             return (array) $tags;
@@ -253,24 +253,18 @@ class Builder extends \Illuminate\Database\Query\Builder
     /**
      * Get the cache object with tags assigned, if applicable.
      *
-     * @return \Illuminate\Contracts\Cache\Repository
+     * @return \Illuminate\Cache\Repository
      */
-    protected function getCache()
+    public function getCache()
     {
-        $cache = Cache::driver($this->driver);
-
-        if (! method_exists($cache, 'tags')) {
-            throw new \RuntimeException('Rememberable requires a tagged store.');
-        }
-
-        return $cache->tags($this->getCacheTags());
+        return Cache::driver($this->driver);
     }
 
     /**
      * Execute the query as a "select" statement.
      *
      * @param  array $columns
-     * @return array|static[]
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
     public function get($columns = ['*'])
     {
@@ -287,7 +281,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      * @param  array $columns
      * @return array
      */
-    public function getCached($columns = ['*'])
+    protected function getCached($columns = ['*'])
     {
         if (is_null($this->columns)) {
             $this->columns = $columns;
@@ -310,5 +304,81 @@ class Builder extends \Illuminate\Database\Query\Builder
         }
 
         return $cache->remember($key, $minutes, $callback);
+    }
+
+    public function setTagsForKey(array $tags, $key)
+    {
+        $cache = $this->getCache();
+
+        $store = $cache->getStore();
+
+        if (! $store instanceof RedisStore) {
+            // we can't cache forever in this case. we need sets.
+            return;
+        }
+
+        $connection = $store->connection();
+
+        foreach ($tags as $tag) {
+            $segment = $this->getCacheSegmentKey($tag);
+
+            $connection->sadd($store->getPrefix().$segment, $key);
+        }
+    }
+
+    /**
+     * Flush keys for a set of given tags.
+     *
+     * @param string|array $tags
+     */
+    public function flushKeysForTags($tags)
+    {
+        $tags = is_array($tags) ? $tags : func_get_args();
+
+        $cache = $this->getCache();
+
+        $store = $cache->getStore();
+
+        if (! $store instanceof RedisStore) {
+            // we can't cache forever in this case. we need sets.
+            return;
+        }
+
+        $connection = $store->connection();
+
+        foreach ($tags as $tag) {
+            $segment = $this->getCacheSegmentKey($tag);
+
+            $this->deleteCacheValues($store->getPrefix().$segment, $connection, $cache);
+
+            $cache->forget($segment);
+        }
+    }
+
+    /**
+     * Forget cache values that are tagged.
+     *
+     * @param string $key
+     * @param \Predis\ClientInterface $connection
+     * @param \Illuminate\Contracts\Cache\Repository $store
+     */
+    protected function deleteCacheValues($key, RedisClient $connection, Repository $store)
+    {
+        $members = $connection->smembers($key);
+
+        foreach ($members as $member) {
+            $store->forget($member);
+        }
+    }
+
+    /**
+     * Get a segment key for a cache tag.
+     *
+     * @param string $tag
+     * @return string
+     */
+    protected function getCacheSegmentKey($tag)
+    {
+        return "rememberable-tag:{$tag}:segment";
     }
 }
