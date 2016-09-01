@@ -1,0 +1,13 @@
+language: php
+
+services:
+  - redis
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+
+before_script: composer install
+
+script: vendor/bin/phpunit
