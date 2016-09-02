@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 use Illuminate\Cache\CacheManager;
 use Illuminate\Container\Container;
@@ -65,7 +65,7 @@ $container->singleton('db', function ($app) use ($capsule) {
 });
 
 $container->singleton('events', function ($app) {
-    return (new Dispatcher($app));
+    return new Dispatcher($app);
 });
 
 $capsule->bootEloquent();
