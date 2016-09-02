@@ -11,7 +11,11 @@ trait Rememberable
     protected static function bootRememberable()
     {
         if (static::rememberable()) {
-            static::saving(function (Model $model) {
+            static::saved(function (Model $model) {
+                $model->flush(get_class($model).':'.$model->getKey());
+            });
+
+            static::deleted(function (Model $model) {
                 $model->flush(get_class($model).':'.$model->getKey());
             });
         }
