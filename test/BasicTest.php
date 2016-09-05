@@ -1,6 +1,5 @@
 <?php
 
-
 class BasicRememberTest extends RememberTestCase
 {
     public function testBasicCaching()
