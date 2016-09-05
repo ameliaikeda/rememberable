@@ -86,6 +86,21 @@ $builder->create('groups', function (Blueprint $table) {
     $table->timestamps();
 });
 
+$builder->create('posts', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->string('text');
+    $table->uuid('user_id');
+    $table->timestamps();
+});
+
+$builder->create('comments', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->string('text');
+    $table->uuid('post_id');
+    $table->uuid('user_id');
+    $table->timestamps();
+});
+
 $builder->create('group_user', function (Blueprint $table) {
     $table->uuid('group_id');
     $table->uuid('user_id');
