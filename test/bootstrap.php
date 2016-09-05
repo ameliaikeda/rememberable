@@ -75,6 +75,14 @@ $builder = $capsule->getConnection()->getSchemaBuilder();
 $builder->create('users', function (Blueprint $table) {
     $table->uuid('id')->primary();
     $table->string('name');
+    $table->integer('counter')->default(0);
+    $table->timestamps();
+});
+
+$builder->create('groups', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->string('name');
+    $table->integer('counter')->default(0);
     $table->timestamps();
 });
 
@@ -83,12 +91,6 @@ $builder->create('group_user', function (Blueprint $table) {
     $table->uuid('user_id');
 
     $table->primary(['user_id', 'group_id']);
-});
-
-$builder->create('groups', function (Blueprint $table) {
-    $table->uuid('id')->primary();
-    $table->string('name');
-    $table->timestamps();
 });
 
 Facade::setFacadeApplication($container);
