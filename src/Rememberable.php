@@ -30,7 +30,7 @@ trait Rememberable
      */
     public function __call($method, $parameters)
     {
-        if (static::rememberable() && in_array($method, ['increment', 'decrement'])) {
+        if (static::rememberable() && static::interceptable() && in_array($method, ['increment', 'decrement'])) {
             $result = call_user_func_array([$this, $method], $parameters);
 
             $this->fireModelEvent('saved');
@@ -80,5 +80,19 @@ trait Rememberable
     public static function rememberable()
     {
         return isset(static::$rememberable) && static::$rememberable === true;
+    }
+
+    /**
+     * Check if we're allowed to intercept __call.
+     *
+     * @return bool
+     */
+    public static function interceptable()
+    {
+        if (! isset(static::$interceptable)) {
+            return true;
+        }
+
+        return (bool) static::$interceptable;
     }
 }
