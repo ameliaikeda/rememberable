@@ -21,7 +21,11 @@ class Builder extends \Illuminate\Database\Eloquent\Builder
     {
         $key = $this->query->getCacheKey($columns);
 
-        $results = $this->query->get($columns)->all();
+        $results = $this->query->get($columns);
+
+        if ($results instanceof Collection) {
+            $results = $results->all();
+        }
 
         $connection = $this->model->getConnectionName();
 
