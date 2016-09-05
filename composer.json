@@ -26,5 +26,10 @@
         "psr-4": {
             "Amelia\\Rememberable\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "": "test/stubs/"
+        }
     }
 }
