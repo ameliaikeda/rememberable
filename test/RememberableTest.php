@@ -86,34 +86,20 @@ class RememberableTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($group, Group::find(static::ID));
     }
-}
 
-class RememberableStub extends Model
-{
-    protected static $unguarded = true;
-    public $incrementing = false;
-
-    use Rememberable;
-}
-
-class User extends RememberableStub
-{
-    public function groups()
+    public function testIncrementingModelsPopsCache()
     {
-        return $this->belongsToMany(Group::class);
+        $group = Group::create(['id' => static::ID, 'name' => 'counter test', 'counter' => 0]);
+
+        $cached = Group::find(static::ID);
+
+        $group->increment('counter');
+
+        $new = Group::find(static::ID);
+
+        $this->assertNotEquals($cached, $new);
+
+        $this->assertEquals(1, $group->counter);
+        $this->assertEquals(1, $new->counter);
     }
-}
-
-class Group extends RememberableStub
-{
-    protected static $rememberable = true;
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class);
-    }
-}
-
-class SqlIssuedException extends Exception
-{
 }
