@@ -16,6 +16,11 @@ class IncrementingTest extends RememberTestCase
 
         $this->assertEquals(1, $group->counter);
         $this->assertEquals(1, $new->counter);
+
+        static::$sql = false;
+
+        // check we've properly cached here.
+        Group::find(static::ID);
     }
 
     public function testDecrementingModelsPopsCache()
@@ -32,5 +37,10 @@ class IncrementingTest extends RememberTestCase
 
         $this->assertEquals(-1, $group->counter);
         $this->assertEquals(-1, $new->counter);
+
+        static::$sql = false;
+
+        // check we've properly cached here.
+        Group::find(static::ID);
     }
 }
