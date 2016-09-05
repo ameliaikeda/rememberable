@@ -22,23 +22,23 @@ trait Rememberable
     }
 
     /**
-     * Run the increment or decrement method on the model.
+     * Handle dynamic method calls into the model.
      *
-     * @param  string  $column
-     * @param  int  $amount
-     * @param  array  $extra
      * @param  string  $method
-     * @return int
+     * @param  array  $parameters
+     * @return mixed
      */
-    protected function incrementOrDecrement($column, $amount, $extra, $method)
+    public function __call($method, $parameters)
     {
-        $result = parent::incrementOrDecrement($column, $amount, $extra, $method);
+        if (static::rememberable() && static::interceptable() && in_array($method, ['increment', 'decrement'])) {
+            $result = call_user_func_array([$this, $method], $parameters);
 
-        if (static::rememberable() && static::interceptable()) {
             $this->fireModelEvent('saved');
+
+            return $result;
         }
 
-        return $result;
+        return parent::__call($method, $parameters);
     }
 
     /**
