@@ -22,6 +22,26 @@ trait Rememberable
     }
 
     /**
+     * Handle dynamic method calls into the model.
+     *
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if (static::rememberable() && in_array($method, ['increment', 'decrement'])) {
+            $result = call_user_func_array([$this, $method], $parameters);
+
+            $this->fireModelEvent('saved');
+
+            return $result;
+        }
+
+        return parent::__call($method, $parameters);
+    }
+
+    /**
      * Get a new query builder instance for the connection.
      *
      * @return \Illuminate\Database\Query\Builder
