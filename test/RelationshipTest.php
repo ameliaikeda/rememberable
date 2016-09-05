@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Redis;
+
 class RelationshipTest extends RememberTestCase
 {
     public function testBelongsTo()
@@ -21,7 +23,7 @@ class RelationshipTest extends RememberTestCase
         $this->assertEquals($user, $post->user);
     }
 
-    public function testHasMany()
+    public function testHasOneOrMany()
     {
         list($user, $post, $commenter) = $this->fixtures();
 
@@ -45,6 +47,41 @@ class RelationshipTest extends RememberTestCase
         static::$sql = false;
 
         $this->assertEquals($commenters, $post->users);
+    }
+
+    public function testBelongsToMany()
+    {
+        $user = User::create(['id' => 'user 1', 'name' => 'test user']);
+
+        Group::create(['id' => 'group 1', 'name' => 'group 1']);
+        Group::create(['id' => 'group 2', 'name' => 'group 2']);
+        Group::create(['id' => 'group 3', 'name' => 'group 3']);
+        Group::create(['id' => 'group 4', 'name' => 'group 4']);
+        Group::create(['id' => 'group 5', 'name' => 'group 5']);
+
+        $user->groups()->sync(['group 1', 'group 2', 'group 3', 'group 4']);
+
+        $user = $user->fresh();
+
+        $groups = $user->groups;
+
+        $user = $user->fresh();
+
+        static::$sql = false;
+
+        $this->assertEquals($groups, $user->groups);
+
+        static::$sql = true;
+
+        $user = $user->fresh();
+
+        $groups = $user->groups;
+
+        $user->groups()->attach('group 5');
+
+        $user = $user->fresh();
+
+        $this->assertCount(5, $user->groups);
     }
 
     protected function fixtures()

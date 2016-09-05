@@ -71,7 +71,7 @@ class Builder extends \Illuminate\Database\Query\Builder
         ConnectionInterface $connection,
         Grammar $grammar,
         Processor $processor,
-        Model $model
+        Model $model = null
     ) {
         $this->model = $model;
 
@@ -204,8 +204,11 @@ class Builder extends \Illuminate\Database\Query\Builder
         $tags = (array) $this->tags;
         $tags[] = static::VERSION_TAG;
         $tags[] = static::BASE_TAG;
-        $tags[] = get_class($this->model);
         $tags[] = $this->from;
+
+        if ($this->model) {
+            $tags[] = get_class($this->model);
+        }
 
         return $tags;
     }

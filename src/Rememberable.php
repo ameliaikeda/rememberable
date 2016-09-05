@@ -79,7 +79,11 @@ trait Rememberable
      */
     public static function rememberable()
     {
-        return isset(static::$rememberable) && static::$rememberable === true;
+        if (! isset(static::$rememberable)) {
+            return false;
+        }
+
+        return (bool) static::$rememberable;
     }
 
     /**
@@ -94,5 +98,20 @@ trait Rememberable
         }
 
         return (bool) static::$interceptable;
+    }
+
+    /**
+     * Determine if the model touches a given relation.
+     *
+     * @param  string  $relation
+     * @return bool
+     */
+    public function touches($relation)
+    {
+        if (static::rememberable()) {
+            return true;
+        }
+
+        return parent::touches($relation);
     }
 }
