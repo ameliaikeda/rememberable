@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Redis;
 
 class RelationshipTest extends RememberTestCase
 {
@@ -40,7 +39,7 @@ class RelationshipTest extends RememberTestCase
     {
         list($user, $post, $commenter) = $this->fixtures();
 
-            $commenters = $post->users;
+        $commenters = $post->users;
 
         $post = $post->fresh();
 
