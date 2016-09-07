@@ -16,6 +16,6 @@ class Post extends RememberableStub
 
     public function users()
     {
-        return $this->hasManyThrough(User::class, self::class, 'user_id', 'id');
+        return $this->hasManyThrough(User::class, static::class, 'user_id', 'id');
     }
 }
