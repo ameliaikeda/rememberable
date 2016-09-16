@@ -68,6 +68,10 @@ $container->singleton('events', function ($app) {
     return new Dispatcher($app);
 });
 
+$container->singleton(Illuminate\Contracts\Bus\Dispatcher::class, function ($app) {
+    return new Illuminate\Bus\Dispatcher($app);
+});
+
 $capsule->bootEloquent();
 
 $builder = $capsule->getConnection()->getSchemaBuilder();
