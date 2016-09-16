@@ -22,28 +22,20 @@ class Builder extends \Illuminate\Database\Eloquent\Builder
     {
         $key = $this->query->getCacheKey($columns);
 
-        $results = $this->query->get($columns);
-
-        if ($results instanceof BaseCollection) {
-            $results = $results->all();
-        }
-
-        $connection = $this->model->getConnectionName();
-
-        $models = $this->model->hydrate($results, $connection);
+        $models = parent::getModels($columns);
 
         $this->tagModels($models, $key);
 
-        return $models->all();
+        return $models;
     }
 
     /**
      * Tag this cache key with the ID of every model in the collection.
      *
-     * @param \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model[] $models
+     * @param array|\Illuminate\Database\Eloquent\Model[] $models
      * @param string $key
      */
-    protected function tagModels(Collection $models, $key)
+    protected function tagModels($models, $key)
     {
         $tags = $this->query->getCacheTags();
 
