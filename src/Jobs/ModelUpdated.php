@@ -2,6 +2,7 @@
 
 namespace Amelia\Rememberable\Jobs;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelUpdated
@@ -30,15 +31,32 @@ class ModelUpdated
      */
     public function handle()
     {
-        $this->model->flush($this->key($this->model));
+        $this->flush($this->model);
 
         foreach ($this->model->getRelations() as $type => $relation) {
             if ($relation === null) {
                 continue;
             }
 
-            $this->model->flush($this->key($relation));
+            if ($relation instanceof Collection) {
+                $relation->each(function (Model $model) {
+                    $this->flush($model);
+                });
+            } else {
+                $this->flush($relation);
+            }
         }
+    }
+
+    /**
+     * Flush the cache for a given model.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @return void
+     */
+    protected function flush(Model $model)
+    {
+        $this->model->flush($this->key($model));
     }
 
     /**
