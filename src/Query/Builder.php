@@ -36,7 +36,7 @@ class Builder extends \Illuminate\Database\Query\Builder
      *
      * @var array
      */
-    protected $tags;
+    protected $tags = [];
 
     /**
      * The cache driver to be used.
@@ -201,13 +201,16 @@ class Builder extends \Illuminate\Database\Query\Builder
             return (array) $tags;
         }
 
-        $tags = (array) $this->tags;
         $tags[] = static::VERSION_TAG;
         $tags[] = static::BASE_TAG;
         $tags[] = $this->from;
 
         if ($this->model) {
             $tags[] = get_class($this->model);
+        }
+
+        if ($this->tags) {
+            $tags = array_merge($tags, $this->tags);
         }
 
         return $tags;
@@ -343,5 +346,17 @@ class Builder extends \Illuminate\Database\Query\Builder
     protected function getCacheSegmentKey($tag)
     {
         return "rememberable-tag:{$tag}:segment";
+    }
+
+    /**
+     * Add a model tag.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param $key
+     * @return void
+     */
+    public function addModelTag(Model $model, $key)
+    {
+        $this->tags[] = get_class($model).':'.$key;
     }
 }
