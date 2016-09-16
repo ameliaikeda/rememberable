@@ -19,7 +19,7 @@ abstract class RememberTestCase extends PHPUnit_Framework_TestCase
     {
         DB::listen(function ($query) {
             if (static::$sql === false) {
-                throw new SqlIssuedException($query->sql);
+                throw new SqlIssuedException($query->sql."\n".json_encode($query->bindings, JSON_PRETTY_PRINT));
             }
         });
     }
