@@ -2,23 +2,45 @@
 
 namespace Amelia\Rememberable;
 
+use Amelia\Rememberable\Jobs\ModelUpdated;
 use Amelia\Rememberable\Query\Builder as QueryBuilder;
 use Amelia\Rememberable\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Rememberable
+ *
+ * @method void flush(array|string $tags = null)
+ */
 trait Rememberable
 {
     protected static function bootRememberable()
     {
         if (static::rememberable()) {
             static::saved(function (Model $model) {
-                $model->flush(get_class($model).':'.$model->getKey());
+                $class = static::getFlushJob();
+
+                dispatch(new $class($model));
             });
 
             static::deleted(function (Model $model) {
-                $model->flush(get_class($model).':'.$model->getKey());
+                $class = static::getFlushJob();
+
+                dispatch(new $class($model));
             });
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    protected static function getFlushJob()
+    {
+        if (isset(static::$job)) {
+            return static::$job;
+        }
+
+        return ModelUpdated::class;
     }
 
     /**
@@ -114,4 +136,13 @@ trait Rememberable
 
         return parent::touches($relation);
     }
+
+    /**
+     * Fire the given event for the model.
+     *
+     * @param  string  $event
+     * @param  bool  $halt
+     * @return mixed
+     */
+    abstract public function fireModelEvent($event, $halt = true);
 }
