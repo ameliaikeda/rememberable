@@ -49,6 +49,6 @@ class ModelUpdated
      */
     protected function key(Model $model)
     {
-        return get_class($model.':'.$model->getKey());
+        return get_class($model).':'.$model->getKey();
     }
 }
