@@ -6,6 +6,7 @@ use Amelia\Rememberable\Jobs\ModelUpdated;
 use Amelia\Rememberable\Query\Builder as QueryBuilder;
 use Amelia\Rememberable\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Class Rememberable
@@ -14,6 +15,18 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait Rememberable
 {
+    /**
+     * A list of relations that are loaded on this model.
+     *
+     * @var \Illuminate\Database\Eloquent\Relations\Relation[]
+     */
+    public static $rememberableRelations = [];
+
+    /**
+     * Boot rememberable up.
+     *
+     * @return void
+     */
     protected static function bootRememberable()
     {
         if (static::rememberable()) {
@@ -145,4 +158,23 @@ trait Rememberable
      * @return mixed
      */
     abstract public function fireModelEvent($event, $halt = true);
+
+    /**
+     * @param $name
+     * @param \Illuminate\Database\Eloquent\Relations\Relation $relation
+     */
+    public function addRememberableRelation($name, Relation $relation)
+    {
+        static::$rememberableRelations[$name] = $relation;
+    }
+
+    /**
+     * Get a keyed array of rememberable relations.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\Relation[]
+     */
+    public function getRememberableRelations()
+    {
+        return static::$rememberableRelations;
+    }
 }
